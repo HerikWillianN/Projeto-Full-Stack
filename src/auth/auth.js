@@ -116,7 +116,7 @@ authRouter.post('/login', (req, res) => {
                 sucess: false,
                 statusCode: 400,
                 body: {
-                    text: 'User not found'
+                    text: 'Credentials are not correct'
                 }
             })
         }

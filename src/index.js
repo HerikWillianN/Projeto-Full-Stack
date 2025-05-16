@@ -4,6 +4,7 @@ import { Mongo } from './database/mongo.js'
 import { config } from 'dotenv'
 import authRouter from './auth/auth.js'
 import usersRouter from './routes/users.js'
+import roupasRouter from './routes/roupas.js'
 
 config()
 
@@ -23,13 +24,14 @@ async function main() {
         res.send({
             sucess: true,
             statusCode: 200,
-            body: 'Bem vindo à loja'
+            body: 'Bem vindo ao Ret House Brechó'
         })
     })
 
     // routes
     app.use('/auth', authRouter)
     app.use('/users', usersRouter)
+    app.use('/roupas', roupasRouter)
     
     app.listen(port, () => {
         console.log(`Server running on: http://${hostname}:${port}`)
