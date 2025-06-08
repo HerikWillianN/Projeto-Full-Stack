@@ -1,64 +1,55 @@
-import { Mongo } from "../database/mongo.js";
-import { ObjectId } from "mongodb";
-import crypto from "crypto";
+import { Mongo } from "../database/mongo.js"
+import { ObjectId } from 'mongodb'
+import crypto from 'crypto'
 
-const collectionName = "users";
+const collectionName = 'users'
 
-export default class UserDataAccess {
+export default class UsersDataAccess {
     async getUsers() {
-        const result = await Mongo.db.collection(collectionName).find({}).toArray();
-        return result;
+        const result = await Mongo.db
+            .collection(collectionName)
+            .find({}, { projection: { password: 0, salt: 0 } })
+            .toArray()
+
+        return result
     }
 
     async deleteUser(userId) {
-        const result = await Mongo.db.collection(collectionName).findOneAndDelete({ _id: new ObjectId(userId) });
-        return result;
+        const result = await Mongo.db
+            .collection(collectionName)
+            .findOneAndDelete({ _id: new ObjectId(userId) })
+
+        return result
     }
 
     async updateUser(userId, userData) {
-        try {
-            if (userData.password) {
-                const salt = crypto.randomBytes(16);
+        if (userData.password) {
+            const salt = crypto.randomBytes(16)
 
-                const hashedPassword = await new Promise((resolve, reject) => {
-                    crypto.pbkdf2(userData.password, salt, 310000, 16, "sha256", (err, derivedKey) => {
-                        if (err) {
-                            return reject(new Error("Error during password hashing"));
-                        }
-                        resolve(derivedKey);
-                    });
-                });
+            crypto.pbkdf2(userData.password, salt, 310000, 16, 'sha256', async (error, hashedPassword) => {
+                if (error) {
+                    throw new Error('Error during hashing password')
+                }
+                userData = { ...userData, password: hashedPassword, salt }
 
-                userData = { ...userData, password: hashedPassword, salt };
-            }
+                const result = await Mongo.db
+                    .collection(collectionName)
+                    .findOneAndUpdate(
+                        { _id: new ObjectId(userId) },
+                        { $set: userData }
+                    )
 
+                return result
+            })
+        } else {
             const result = await Mongo.db
                 .collection(collectionName)
                 .findOneAndUpdate(
                     { _id: new ObjectId(userId) },
-                    { $set: userData },
-                    { returnDocument: "after" }
-                );
+                    { $set: userData }
+                )
 
-            return {
-                success: true,
-                statusCode: 200,
-                body: {
-                    text: "User updated successfully",
-                    user: result.value
-                }
-            };
-
-        } catch (error) {
-            console.error("Error in updateUser:", error.message);
-            return {
-                success: false,
-                statusCode: 500,
-                body: {
-                    text: "Error updating user",
-                    error: error.message
-                }
-            };
+            return result
         }
     }
 }

@@ -45,7 +45,7 @@ export default class OrdersDataAccess {
                     $group: {
                         _id: '$_id',
                         userDetails: { $first: '$userDetails' },
-                        orderItems: { $push: '$orderItems' },
+                        orderItems: { $first: '$orderItems', },
                         pickupStatus: { $first: '$pickupStatus' },
                         pickupTime: { $first: '$pickupTime' },
                     }

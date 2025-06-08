@@ -23,7 +23,7 @@ async function main() {
 
     app.get('/', (req, res) => {
         res.send({
-            sucess: true,
+            success: true,
             statusCode: 200,
             body: 'Bem vindo ao Ret House Brechó'
         })
