@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "backend",
   "version": "1.0.0",
   "description": "",
@@ -22,5 +23,9 @@
     "mongodb": "^6.16.0",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0"
+=======
+  "dependencies": {
+    "react-router-dom": "^7.6.0"
+>>>>>>> 80570d8 (atualizando)
   }
 }
